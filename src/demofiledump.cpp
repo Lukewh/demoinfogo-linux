@@ -366,6 +366,7 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 		{
 			int nEntityIndex = FindPlayerEntityIndex( nIndex ) + 1;
 			EntityEntry *pEntity = FindEntity( nEntityIndex );
+
 			if ( pEntity )
 			{
 				PropEntry *pXYProp = pEntity->FindProp( "m_vecOrigin" );
@@ -381,13 +382,7 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 						printf( "  position: %f, %f, %f\n", pXYProp->m_pPropValue->m_value.m_vector.x, pXYProp->m_pPropValue->m_value.m_vector.y, pZProp->m_pPropValue->m_value.m_float );
 					}
 				}
-				else
-				{
-					if ( bCSV )
-					{
-						printf(", , , ");
-					}
-				}
+
 				PropEntry *pAngle0Prop = pEntity->FindProp( "m_angEyeAngles[0]" );
 				PropEntry *pAngle1Prop = pEntity->FindProp( "m_angEyeAngles[1]" );
 				if ( pAngle0Prop && pAngle1Prop )
@@ -399,13 +394,6 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 					else
 					{
 						printf( "  facing: pitch:%f, yaw:%f\n", pAngle0Prop->m_pPropValue->m_value.m_float, pAngle1Prop->m_pPropValue->m_value.m_float );
-					}
-				}
-				else
-				{
-					if ( bCSV )
-					{
-						printf(", , ");
 					}
 				}
 				PropEntry *pTeamProp = pEntity->FindProp( "m_iTeamNum" );
@@ -420,30 +408,9 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 						printf( "  team: %s\n", ( pTeamProp->m_pPropValue->m_value.m_int == 2 ) ? "T" : "CT" );
 					}
 				}
-				else
-				{
-					if ( bCSV )
-					{
-						printf(", ");
-					}
-				}
-			}
-		}
-		else
-		{
-			if ( bCSV )
-			{
-				printf(", , , , , , ");
 			}
 		}
 		return true;
-	}
-	else
-	{
-		if ( bCSV )
-		{
-			printf(", , , , , , , , ");
-		}
 	}
 	return false;
 }
