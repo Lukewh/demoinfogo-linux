@@ -385,7 +385,7 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 				{
 					if ( bCSV )
 					{
-						printf("%s", ",,,");
+						printf(", , , ");
 					}
 				}
 				PropEntry *pAngle0Prop = pEntity->FindProp( "m_angEyeAngles[0]" );
@@ -405,7 +405,7 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 				{
 					if ( bCSV )
 					{
-						printf("%s", ",,");
+						printf(", , ");
 					}
 				}
 				PropEntry *pTeamProp = pEntity->FindProp( "m_iTeamNum" );
@@ -424,7 +424,7 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 				{
 					if ( bCSV )
 					{
-						printf("%s", ",");
+						printf(", ");
 					}
 				}
 			}
@@ -433,7 +433,7 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 		{
 			if ( bCSV )
 			{
-				printf("%s", ",,,,,,");
+				printf(", , , , , , ");
 			}
 		}
 		return true;
@@ -442,7 +442,7 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 	{
 		if ( bCSV )
 		{
-			printf("%s", ",,,,,,,,");
+			printf(", , , , , , , , ");
 		}
 	}
 	return false;
