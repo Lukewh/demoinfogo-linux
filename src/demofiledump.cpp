@@ -1,24 +1,24 @@
 //====== Copyright (c) 2014, Valve Corporation, All rights reserved. ========//
 //
-// Redistribution and use in source and binary forms, with or without 
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 //
 // Redistributions of source code must retain the above copyright notice, this
 // list of conditions and the following disclaimer.
-// Redistributions in binary form must reproduce the above copyright notice, 
-// this list of conditions and the following disclaimer in the documentation 
+// Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditions and the following disclaimer in the documentation
 // and/or other materials provided with the distribution.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //===========================================================================//
 
@@ -325,7 +325,7 @@ bool HandlePlayerConnectDisconnectEvents( const CSVCMsg_GameEvent &msg, const CS
 			{
 				strcpy( newPlayer.guid, "BOT" );
 			}
-				
+
 			if ( index < s_PlayerInfos.size() )
 			{
 				// only replace existing player slot if the userID is different (very unlikely)
@@ -381,6 +381,13 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 						printf( "  position: %f, %f, %f\n", pXYProp->m_pPropValue->m_value.m_vector.x, pXYProp->m_pPropValue->m_value.m_vector.y, pZProp->m_pPropValue->m_value.m_float );
 					}
 				}
+				else
+				{
+					if ( bCSV )
+					{
+						printf( ",,,");
+					}
+				}
 				PropEntry *pAngle0Prop = pEntity->FindProp( "m_angEyeAngles[0]" );
 				PropEntry *pAngle1Prop = pEntity->FindProp( "m_angEyeAngles[1]" );
 				if ( pAngle0Prop && pAngle1Prop )
@@ -392,6 +399,13 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 					else
 					{
 						printf( "  facing: pitch:%f, yaw:%f\n", pAngle0Prop->m_pPropValue->m_value.m_float, pAngle1Prop->m_pPropValue->m_value.m_float );
+					}
+				}
+				else
+				{
+					if ( bCSV )
+					{
+						printf( ",,");
 					}
 				}
 				PropEntry *pTeamProp = pEntity->FindProp( "m_iTeamNum" );
@@ -406,9 +420,30 @@ bool ShowPlayerInfo( const char *pField, int nIndex, bool bShowDetails = true, b
 						printf( "  team: %s\n", ( pTeamProp->m_pPropValue->m_value.m_int == 2 ) ? "T" : "CT" );
 					}
 				}
+				else
+				{
+					if ( bCSV )
+					{
+						printf( ",");
+					}
+				}
+			}
+		}
+		else
+		{
+			if ( bCSV )
+			{
+				printf( ",,,,,,");
 			}
 		}
 		return true;
+	}
+	else
+	{
+		if ( bCSV )
+		{
+			printf( ",,,,,,,,");
+		}
 	}
 	return false;
 }
@@ -448,7 +483,7 @@ void HandlePlayerDeath( const CSVCMsg_GameEvent &msg, const CSVCMsg_GameEventLis
 			bHeadshot = KeyValue.val_bool();
 		}
 	}
-	
+
 	ShowPlayerInfo( "victim", userid, true, true );
 	printf ( ", " );
 	ShowPlayerInfo( "attacker", attackerid, true, true );
@@ -564,7 +599,7 @@ static void LowLevelByteSwap( T *output, const T *input )
 	T temp = *output;
 	for ( unsigned int i = 0; i < sizeof( T ); i++ )
 	{
-		( ( unsigned char* )&temp )[i] = ( ( unsigned char* )input )[ sizeof( T ) - ( i + 1 ) ]; 
+		( ( unsigned char* )&temp )[i] = ( ( unsigned char* )input )[ sizeof( T ) - ( i + 1 ) ];
 	}
 	memcpy( output, &temp, sizeof( T ) );
 }
@@ -604,7 +639,7 @@ void ParseStringTableUpdate( CBitRead &buf, int entries, int nMaxEntries, int us
 		}
 
 		lastEntry = entryIndex;
-		
+
 		if ( entryIndex < 0 || entryIndex >= nMaxEntries )
 		{
 			printf( "ParseStringTableUpdate: bogus string index %i\n", entryIndex );
@@ -612,7 +647,7 @@ void ParseStringTableUpdate( CBitRead &buf, int entries, int nMaxEntries, int us
 		}
 
 		const char *pEntry = NULL;
-		char entry[ 1024 ]; 
+		char entry[ 1024 ];
 		char substr[ 1024 ];
 		entry[ 0 ] = 0;
 
@@ -635,7 +670,7 @@ void ParseStringTableUpdate( CBitRead &buf, int entries, int nMaxEntries, int us
 
 			pEntry = entry;
 		}
-		
+
 		// Read in the user data.
 		unsigned char tempbuf[ MAX_USERDATA_SIZE ];
 		memset( tempbuf, 0, sizeof( tempbuf ) );
@@ -732,7 +767,7 @@ void PrintNetMessage< CSVCMsg_CreateStringTable, svc_CreateStringTable >( CDemoF
 			printf( "CreateStringTable:%s:%d:%d:%d:%d:\n", msg.name().c_str(), msg.max_entries(), msg.num_entries(), msg.user_data_size(), msg.user_data_size_bits() );
 		}
 		CBitRead data( &msg.string_data()[ 0 ], msg.string_data().size() );
-		ParseStringTableUpdate( data,  msg.num_entries(), msg.max_entries(), msg.user_data_size(), msg.user_data_size_bits(), msg.user_data_fixed_size(), bIsUserInfo ); 
+		ParseStringTableUpdate( data,  msg.num_entries(), msg.max_entries(), msg.user_data_size(), msg.user_data_size_bits(), msg.user_data_fixed_size(), bIsUserInfo );
 
 		snprintf( s_StringTables[ s_nNumStringTables ].szName, sizeof( s_StringTables[ s_nNumStringTables ].szName ), "%s", msg.name().c_str() );
 		s_StringTables[ s_nNumStringTables ].nMaxEntries = msg.max_entries();
@@ -756,7 +791,7 @@ void PrintNetMessage< CSVCMsg_UpdateStringTable, svc_UpdateStringTable >( CDemoF
 			{
 				printf( "UpdateStringTable:%d(%s):%d:\n", msg.table_id(), s_StringTables[ msg.table_id() ].szName, msg.num_changed_entries() );
 			}
-			ParseStringTableUpdate( data, msg.num_changed_entries(), s_StringTables[ msg.table_id() ].nMaxEntries, 0, 0, 0, bIsUserInfo ); 
+			ParseStringTableUpdate( data, msg.num_changed_entries(), s_StringTables[ msg.table_id() ].nMaxEntries, 0, 0, 0, bIsUserInfo );
 		}
 		else
 		{
@@ -769,8 +804,8 @@ void RecvTable_ReadInfos( const CSVCMsg_SendTable& msg )
 {
 	if ( g_bDumpDataTables )
 	{
-		printf( "%s:%d\n", msg.net_table_name().c_str(), msg.props_size() ); 
-	
+		printf( "%s:%d\n", msg.net_table_name().c_str(), msg.props_size() );
+
 		for ( int iProp=0; iProp < msg.props_size(); iProp++ )
 		{
 			const CSVCMsg_SendTable::sendprop_t& sendProp = msg.props( iProp );
@@ -877,8 +912,8 @@ void GatherProps_IterateProps( CSVCMsg_SendTable *pTable, int nServerClass, std:
 	{
 		const CSVCMsg_SendTable::sendprop_t& sendProp = pTable->props( iProp );
 
-		if ( ( sendProp.flags() & SPROP_INSIDEARRAY ) || 
-			 ( sendProp.flags() & SPROP_EXCLUDE ) || 
+		if ( ( sendProp.flags() & SPROP_INSIDEARRAY ) ||
+			 ( sendProp.flags() & SPROP_EXCLUDE ) ||
 			 IsPropExcluded( pTable, sendProp ) )
 		{
 			continue;
@@ -970,11 +1005,11 @@ void FlattenDataTable( int nServerClass )
 		while( true )
 		{
 			uint32 currentProp = start;
-			while (currentProp < flattenedProps.size()) 
+			while (currentProp < flattenedProps.size())
 			{
 				const CSVCMsg_SendTable::sendprop_t *prop = flattenedProps[currentProp].m_prop;
 
-				if (prop->priority() == priority || (priority == 64 && (SPROP_CHANGES_OFTEN & prop->flags()))) 
+				if (prop->priority() == priority || (priority == 64 && (SPROP_CHANGES_OFTEN & prop->flags())))
 				{
 					if ( start != currentProp )
 					{
@@ -1003,7 +1038,7 @@ int ReadFieldIndex( CBitRead &entityBitBuffer, int lastIndex, bool bNewWay )
 			return lastIndex + 1;
 		}
 	}
- 
+
 	int ret = 0;
 	if (bNewWay && entityBitBuffer.ReadOneBit())
 	{
@@ -1028,12 +1063,12 @@ int ReadFieldIndex( CBitRead &entityBitBuffer, int lastIndex, bool bNewWay )
 				break;
 		}
 	}
- 
+
 	if (ret == 0xFFF) // end marker is 4095 for cs:go
 	{
 		return -1;
 	}
- 
+
 	return lastIndex + 1 + ret;
 }
 
@@ -1197,7 +1232,7 @@ void PrintNetMessage< CSVCMsg_PacketEntities, svc_PacketEntities >( CDemoFileDum
 
 				switch( updateType )
 				{
-					case EnterPVS:	
+					case EnterPVS:
 						{
 							uint32 uClass = entityBitBuffer.ReadUBitLong( s_nServerClassBits );
 							uint32 uSerialNum = entityBitBuffer.ReadUBitLong( NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS );
@@ -1378,7 +1413,7 @@ void CDemoFileDump::HandleDemoPacket()
 	char			data[ NET_MAX_PAYLOAD ];
 
 	m_demofile.ReadCmdInfo( info );
-	m_demofile.ReadSequenceInfo( dummy, dummy ); 
+	m_demofile.ReadSequenceInfo( dummy, dummy );
 
 	CBitRead buf( data, NET_MAX_PAYLOAD );
 	int length = m_demofile.ReadRawData( ( char* )buf.GetBasePointer(), buf.GetNumBytesLeft() );
@@ -1425,7 +1460,7 @@ bool ParseDataTable( CBitRead &buf )
 	while ( 1 )
 	{
 		int type = buf.ReadVarInt32();
-		
+
 		void *pBuffer = NULL;
 		int size = 0;
 		if ( !ReadFromBuffer( buf, &pBuffer, size ) )
@@ -1443,7 +1478,7 @@ bool ParseDataTable( CBitRead &buf )
 
 		s_DataTables.push_back( msg );
 	}
-	
+
 	short nServerClasses = buf.ReadShort();
 	assert( nServerClasses );
 	for ( int i = 0; i < nServerClasses; i++ )
@@ -1522,7 +1557,7 @@ bool DumpStringTable( CBitRead &buf, bool bIsUserInfo )
 	for ( int i = 0 ; i < numstrings; i++ )
 	{
 		char stringname[4096];
-		
+
 		buf.ReadString( stringname, sizeof( stringname ) );
 
 		assert( strlen( stringname ) < 100 );
@@ -1708,7 +1743,7 @@ void CDemoFileDump::DoDump()
 					m_demofile.ReadUserCmd( NULL, dummy );
 				}
 				break;
-			
+
 			case dem_signon:
 			case dem_packet:
 				{
